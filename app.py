@@ -1,0 +1,79 @@
+from flask import Flask, request, jsonify, render_template
+import mysql.connector
+import bcrypt
+
+app = Flask(__name__)
+
+# Connect to MySQL
+db = mysql.connector.connect(
+    host="localhost",
+    user="appuser",         # MySQL user
+    password="Krishna@2662001", # MySQL password
+    database="login_system"
+)
+cursor = db.cursor()
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# Login endpoint
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    query = "SELECT password FROM users WHERE username=%s"
+    cursor.execute(query, (username,))
+    result = cursor.fetchone()
+
+    if result:
+        stored_password = result[0]
+        if bcrypt.checkpw(password.encode(), stored_password.encode()):
+            return jsonify({"success": True})
+    return jsonify({"success": False, "error": "Invalid username or password!"})
+
+# Registration endpoint
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    # Check if username exists
+    cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
+    if cursor.fetchone():
+        return jsonify({"success": False, "error": "Username already exists!"})
+
+    # Hash the password
+    hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
+
+    # Insert user
+    cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
+    db.commit()
+    return jsonify({"success": True})
+
+if __name__ == "__main__":
+    app.run(debug=True)
+
+
+
+# CREATE USER 'appuser'@'localhost' IDENTIFIED BY 'Krishna@2662001';
+# GRANT ALL PRIVILEGES ON login_system.* TO 'appuser'@'localhost';
+# FLUSH PRIVILEGES;
+
+# CREATE DATABASE login_system;
+# USE login_system;
+
+
+# CREATE TABLE users (
+#     id INT AUTO_INCREMENT PRIMARY KEY,
+#     username VARCHAR(50) NOT NULL UNIQUE,
+#     password VARCHAR(255) NOT NULL
+# );
+
+
+# INSERT INTO users (username, password) VALUES ('admin', '1234 or hash code of 1234 because we use bcrypt to make hash, ');  ## this is manual method
+#FROM SELECT * FROM appuser;
+ 
