@@ -8,7 +8,7 @@ app = Flask(__name__)
 db = mysql.connector.connect(
     host="localhost",
     user="appuser",         # MySQL user
-    password="Krishna@2662001", # MySQL password
+    password="Krishna@2662001", #  MySQL user password
     database="login_system"
 )
 cursor = db.cursor()
@@ -59,6 +59,11 @@ if __name__ == "__main__":
 
 
 
+# pip install mysql-connector-python
+# pip install flask 
+
+
+
 # CREATE USER 'appuser'@'localhost' IDENTIFIED BY 'Krishna@2662001';
 # GRANT ALL PRIVILEGES ON login_system.* TO 'appuser'@'localhost';
 # FLUSH PRIVILEGES;
@@ -74,6 +79,24 @@ if __name__ == "__main__":
 # );
 
 
-# INSERT INTO users (username, password) VALUES ('admin', '1234 or hash code of 1234 because we use bcrypt to make hash, ');  ## this is manual method
+# INSERT INTO users (username, password) VALUES ('admin', '1234 or hash code of 1234 because we use bcrypt to make hash, ');  ## this is manual method  through registeration page it stire in DB automatically in hash code
 #FROM SELECT * FROM appuser;
- 
+
+# SELECT user, host FROM mysql.user;   to see all users in Mysql
+
+
+# SHOW DATABASES;  to see all the databases of an user
+
+# USE login_system;
+# SHOW TABLES;              to see all tables of a database
+
+# DESCRIBE users;     Show Table Structure (Columns and Data Types)
+
+# SELECT * FROM users;      See All Contents of a Table
+
+# SELECT * FROM users LIMIT 10;   You can also limit the number of rows:
+
+
+
+
+

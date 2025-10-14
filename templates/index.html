@@ -89,6 +89,15 @@
     <p id="error" style="color:red;"></p>
   </div>
 
+  <div class="container" id="registerSection">
+  <h2>Register</h2>
+  <input type="text" id="regUsername" placeholder="Username" />
+  <input type="password" id="regPassword" placeholder="Password" />
+  <button onclick="register()">Register</button>
+  <p id="regError" style="color:red;"></p>
+  </div>
+
+
   <div class="container" id="pushSection">
     <h2>Welcome!</h2>
     <button class="push-button" onclick="pushButton()">Push</button>
@@ -96,63 +105,53 @@
     <button style="margin-top:20px; background:#e74c3c;" onclick="logout()">Logout</button>
   </div>
 
-  <div class="container" id="registerSection">
-    <h2>Register</h2>
-    <input type="text" id="regUsername" placeholder="Username" />
-    <input type="password" id="regPassword" placeholder="Password" />
-    <button onclick="register()">Register</button>
-    <p id="regError" style="color:red;"></p>
-</div>
-
-
   <script>
-    async function login() {
-        const username = document.getElementById("username").value.trim();
-        const password = document.getElementById("password").value.trim();
-        const error = document.getElementById("error");
+        async function login() {
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
+    const error = document.getElementById("error");
 
-        const response = await fetch('/login', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({username, password})
-        });
+    const response = await fetch('/login', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username, password})
+    });
 
-  const result = await response.json();
+    const result = await response.json();
 
-  if (result.success) {
-    document.getElementById("loginSection").style.display = "none";
-    document.getElementById("pushSection").style.display = "flex";
-  } else {
-    error.textContent = result.error;
-  }
-}
+    if (result.success) {
+        document.getElementById("loginSection").style.display = "none";
+        document.getElementById("pushSection").style.display = "flex";
+    } else {
+        error.textContent = result.error;
+    }
+    }
 
-async function register() {
-  const username = document.getElementById("regUsername").value.trim();
-  const password = document.getElementById("regPassword").value.trim();
-  const regError = document.getElementById("regError");
+    async function register() {
+    const username = document.getElementById("regUsername").value.trim();
+    const password = document.getElementById("regPassword").value.trim();
+    const regError = document.getElementById("regError");
 
-  const response = await fetch('/register', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({username, password})
-  });
+    const response = await fetch('/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({username, password})
+    });
 
-  const result = await response.json();
+    const result = await response.json();
 
-  if (result.success) {
-    regError.style.color = "green";
-    regError.textContent = "User registered successfully! You can login now.";
-  } else {
-    regError.style.color = "red";
-    regError.textContent = result.error;
-  }
-}
-
+    if (result.success) {
+        regError.style.color = "green";
+        regError.textContent = "User registered successfully! You can login now.";
+    } else {
+        regError.style.color = "red";
+        regError.textContent = result.error;
+    }
+    }
 
     function pushButton() {
       const status = document.getElementById("status");
-      status.textContent = "Button Pushed!";
+      status.textContent = " Button Pushed!";
       setTimeout(() => status.textContent = "", 1000);
     }
 
