@@ -1,14 +1,15 @@
 from flask import Flask, request, jsonify, render_template
 import mysql.connector
 import bcrypt
+from datetime import datetime
 
 app = Flask(__name__)
 
-# Connect to MySQL
+# Database connection
 db = mysql.connector.connect(
     host="localhost",
-    user="appuser",         # MySQL user
-    password="Krishna@2662001", #  MySQL user password
+    user="appuser",        #  MySQL user
+    password="Krishna@2662001",#  MySQL password
     database="login_system"
 )
 cursor = db.cursor()
@@ -17,7 +18,6 @@ cursor = db.cursor()
 def index():
     return render_template('index.html')
 
-# Login endpoint
 @app.route('/login', methods=['POST'])
 def login():
     data = request.json
@@ -34,25 +34,34 @@ def login():
             return jsonify({"success": True})
     return jsonify({"success": False, "error": "Invalid username or password!"})
 
-# Registration endpoint
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
     username = data.get('username')
     password = data.get('password')
 
-    # Check if username exists
     cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
     if cursor.fetchone():
         return jsonify({"success": False, "error": "Username already exists!"})
-
-    # Hash the password
+    
+      # Hash the password
     hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
 
-    # Insert user
     cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, hashed_password))
     db.commit()
     return jsonify({"success": True})
+
+# New route: Log push events
+@app.route('/push', methods=['POST'])
+def push_event():
+    data = request.json
+    username = data.get('username')
+
+    cursor.execute("INSERT INTO punch_logs (username) VALUES (%s)", (username,))
+    db.commit()
+
+    return jsonify({"success": True, "message": f"Punched by {username} at {datetime.now()}"})
+
 
 if __name__ == "__main__":
     app.run(debug=True)
