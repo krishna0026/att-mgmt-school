@@ -11,243 +11,177 @@
       --accent: #2f9e44;
       --danger: #e74c3c;
       --muted: #6e7583;
-      --shadow: 0 6px 18px rgba(255, 8, 8, 0.516);
+      --shadow: 0 6px 18px rgba(0,0,0,0.15);
       font-family: Inter, Arial, sans-serif;
     }
     *{box-sizing:border-box}
     body{
-      margin:0;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      background:var(--bg);
-      color:#0d0f15;
-      padding:24px;
+      margin:0;min-height:100vh;
+      display:flex;align-items:center;justify-content:center;
+      background:var(--bg);color:#0d0f15;padding:24px;
     }
-
-    .wrap{
-      width:360px;
-    }
-
-    .card{
-      background:var(--card);
-      border-radius:12px;
-      padding:22px;
-      box-shadow:var(--shadow);
-      margin-bottom:14px;
-    }
-
-    h2{margin:0 0 12px 0;font-size:20px}
+    .wrap{width:360px;}
+    .card{background:var(--card);border-radius:12px;padding:22px;box-shadow:var(--shadow);margin-bottom:14px;}
+    h2{margin:0 0 12px;font-size:20px}
     label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
-    input[type="text"], input[type="password"]{
-      width:100%;
-      padding:10px 12px;
-      border-radius:8px;
-      border:1px solid #e6e9ee;
-      margin-bottom:10px;
-      font-size:15px;
+    input[type="text"],input[type="password"]{
+      width:100%;padding:10px 12px;border-radius:8px;border:1px solid #e6e9ee;
+      margin-bottom:10px;font-size:15px;
     }
-
     .row{display:flex;gap:10px}
     .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:8px;
-      background:var(--accent);
-      color:#fff;
-      padding:10px 14px;
-      border-radius:8px;
-      border:none;
-      cursor:pointer;
-      font-weight:600;
-      font-size:14px;
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      background:var(--accent);color:#fff;padding:10px 14px;border-radius:8px;
+      border:none;cursor:pointer;font-weight:600;font-size:14px;
     }
-    .btn.secondary{background:#ce1616f8}
+    .btn.secondary{background:#555}
     .btn.danger{background:var(--danger)}
     .btn:disabled{opacity:0.6;cursor:not-allowed}
-
     .push-button{
-      width:120px;
-      height:120px;
-      border-radius:50%;
-      border:none;
-      background:var(--accent);
-      color:#fff;
-      font-size:18px;
-      cursor:pointer;
-      box-shadow:0 8px 0 rgba(0,0,0,0.08);
-      transition:transform .08s ease, box-shadow .08s ease;
+      width:120px;height:120px;border-radius:50%;border:none;
+      background:var(--accent);color:#fff;font-size:18px;cursor:pointer;
+      box-shadow:0 8px 0 rgba(0,0,0,0.08);transition:transform .08s ease;
     }
-    .push-button:active{transform:translateY(6px); box-shadow:0 2px 0 rgba(0,0,0,0.06)}
-
-    .muted{color:var(--muted);font-size:13px}
+    .push-button:active{transform:translateY(6px)}
     .msg{font-size:14px;margin-top:8px}
-
-    .flex {display:flex; align-items:center; justify-content:space-between}
-    .small{font-size:12px;color:var(--muted)}
-
-    /* show / hide sections */
+    .muted{color:var(--muted);font-size:13px}
+    .flex{display:flex;align-items:center;justify-content:space-between}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{border:1px solid #ddd;padding:6px;text-align:left;font-size:13px}
+    th{background:#f1f1f1}
     #authArea, #pushArea {display:block}
     #pushArea{display:none}
+    #dashboardArea{display:none}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <!-- AUTH (Login & Register) -->
+    <!-- LOGIN / REGISTER -->
     <div id="authArea" class="card">
-      <div class="flex">
-        <h2>Sign in / Register</h2>
+      <h2>Sign in / Register</h2>
+      <label>Username</label>
+      <input id="username" type="text" />
+      <label>Password</label>
+      <input id="password" type="password" />
+      <div class="row">
+        <button class="btn" onclick="login()">Login</button>
+        <button class="btn secondary" onclick="register()">Register</button>
       </div>
-
-      <!-- Login -->
-      <div style="margin-top:12px;">
-        <label for="username">Username</label>
-        <input id="username" type="text"  />
-
-        <label for="password">Password</label>
-        <input id="password" type="password"  />
-
-        <div class="row" style="margin-top:6px">
-          <button id="loginBtn" class="btn" onclick="login()">Login</button>
-          <button id="registerBtn" class="btn secondary" onclick="register()">Register</button>
-        </div>
-
-        <div id="authMsg" class="msg muted"></div>
-      </div>
+      <div id="authMsg" class="msg muted"></div>
     </div>
 
     <!-- PUSH AREA -->
     <div id="pushArea" class="card">
       <div class="flex">
         <h2>Welcome, <span id="who"></span></h2>
-        <div>
+        <div class="row">
+          <button class="btn" id="dashboardBtn" style="display:none" onclick="showDashboard()">Admin Panel</button>
           <button class="btn danger" onclick="logout()">Logout</button>
         </div>
       </div>
-
       <div style="text-align:center;margin-top:16px">
-        <button id="pushBtn" class="push-button" onclick="pushButton()" title="Press to record punch">PUSH</button>
-        <div id="pushStatus" class="msg muted" style="margin-top:12px"></div>
+        <button id="pushBtn" class="push-button" onclick="pushButton()">PUSH</button>
+        <div id="pushStatus" class="msg muted"></div>
       </div>
+    </div>
 
-      
-
-      
+    <!-- ADMIN DASHBOARD -->
+    <div id="dashboardArea" class="card">
+      <h2>All Punch Logs</h2>
+      <table>
+        <thead><tr><th>Username</th><th>Punch Time</th></tr></thead>
+        <tbody id="dashboardTable"></tbody>
+      </table>
+    </div>
+  </div>
 
   <script>
-    // Current logged-in user (client-side)
     let currentUser = null;
 
-    // Helper to show messages
-    function setAuthMsg(text, success = true) {
-      const el = document.getElementById('authMsg');
-      el.textContent = text || '';
-      el.style.color = success ? 'var(--muted)' : 'var(--danger)';
+    function setAuthMsg(msg, success = true) {
+      const el = document.getElementById("authMsg");
+      el.textContent = msg || "";
+      el.style.color = success ? "var(--muted)" : "var(--danger)";
     }
 
-    // Login -> calls POST /login
     async function login() {
-      setAuthMsg('');
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      if (!username || !password) return setAuthMsg("Enter credentials", false);
 
-      if (!username || !password) { setAuthMsg('Enter username and password', false); return; }
+      const res = await fetch("/login", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username, password})
+      });
+      const data = await res.json();
 
-      try {
-        const res = await fetch('/login', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({username, password})
-        });
-        const data = await res.json();
-
-        if (data && data.success) {
-          currentUser = username;
-          document.getElementById('who').textContent = currentUser;
-          document.getElementById('authArea').style.display = 'none';
-          document.getElementById('pushArea').style.display = 'block';
-          setAuthMsg('');
-          await refreshPunchCount();
-        } else {
-          setAuthMsg(data.error || 'Login failed', false);
-        }
-      } catch (err) {
-        // setAuthMsg('Server error: ' + err.message, false);
+      if (data.success) {
+        currentUser = username;
+        document.getElementById("who").textContent = currentUser;
+        document.getElementById("authArea").style.display = "none";
+        document.getElementById("pushArea").style.display = "block";
+        setAuthMsg("");
+        checkAdmin();
+      } else {
+        setAuthMsg(data.error || "Login failed", false);
       }
     }
 
-    // Register -> calls POST /register
     async function register() {
-      setAuthMsg('');
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
+      const username = document.getElementById("username").value.trim();
+      const password = document.getElementById("password").value;
+      if (!username || !password) return setAuthMsg("Enter username and password", false);
 
-      if (!username || !password) { setAuthMsg('Enter username and password to register', false); return; }
-
-      try {
-        const res = await fetch('/register', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({username, password})
-        });
-        const data = await res.json();
-
-        if (data && data.success) {
-          setAuthMsg('Registered successfully — you can now login.');
-        } else {
-          setAuthMsg(data.error || 'Registration failed', false);
-        }
-      } catch (err) {
-        // setAuthMsg('Server error: ' + err.message, false);
-      }
+      const res = await fetch("/register", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username, password})
+      });
+      const data = await res.json();
+      setAuthMsg(data.success ? "Registered successfully." : data.error, data.success);
     }
 
-    // Push button -> logs punch by currentUser
     async function pushButton() {
-      const status = document.getElementById('pushStatus');
-      if (!currentUser) { status.textContent = 'Please login first.'; return; }
+      if (!currentUser) return alert("Please login first");
+      const res = await fetch("/push", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({username: currentUser})
+      });
+      const data = await res.json();
+      document.getElementById("pushStatus").textContent = data.message || "Error";
+      setTimeout(() => (document.getElementById("pushStatus").textContent = ""), 1500);
+    }
 
-      
-      try {
-        const res = await fetch('/push', {
-          method: 'POST',
-          headers: {'Content-Type':'application/json'},
-          body: JSON.stringify({username: currentUser})
-        });
-        const data = await res.json();
-
-        if (data && data.success) {
-          status.textContent = 'Punch recorded';
-          await refreshPunchCount();
-          // optionally show latest message
-          setTimeout(()=> status.textContent = '', 1800);
-        } else {
-          status.textContent = 'Failed to record punch';
-        }
-      } 
-       finally {
-        btn.disabled = false;
+    function checkAdmin() {
+      if (currentUser === "admin") {
+        document.getElementById("dashboardBtn").style.display = "inline-flex";
+      } else {
+        document.getElementById("dashboardBtn").style.display = "none";
       }
     }
 
-    // Logout
+    async function showDashboard() {
+      if (currentUser !== "admin") return alert("Access denied");
+      const res = await fetch(`/admin-data?username=${currentUser}`);
+      const data = await res.json();
+      if (data.success) {
+        const tbody = document.getElementById("dashboardTable");
+        tbody.innerHTML = "";
+        data.data.forEach(row => {
+          tbody.innerHTML += `<tr><td>${row.username}</td><td>${row.punch_time}</td></tr>`;
+        });
+        document.getElementById("dashboardArea").style.display = "block";
+      }
+    }
+
     function logout() {
       currentUser = null;
-      document.getElementById('username').value = '';
-      document.getElementById('password').value = '';
-      document.getElementById('authArea').style.display = 'block';
-      document.getElementById('pushArea').style.display = 'none';
-      document.getElementById('pushStatus').textContent = '';
-      document.getElementById('logsPreview').textContent = '';
-      document.getElementById('punchCount').textContent = '-';
+      document.getElementById("authArea").style.display = "block";
+      document.getElementById("pushArea").style.display = "none";
+      document.getElementById("dashboardArea").style.display = "none";
     }
-
-   
-
-    
-
   </script>
 </body>
 </html>
