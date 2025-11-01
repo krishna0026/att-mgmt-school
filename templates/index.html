@@ -85,15 +85,66 @@
       </div>
     </div>
 
-    <!-- ADMIN DASHBOARD -->
-    <div id="dashboardArea" class="card">
-      <h2>All Punch Logs</h2>
-      <table>
-        <thead><tr><th>Username</th><th>Punch Time</th></tr></thead>
-        <tbody id="dashboardTable"></tbody>
-      </table>
-    </div>
+    
+<div id="adminPanelCard" class="card" style="display:none;">
+  <h2>Admin Panel</h2>
+
+  <!-- Tab buttons -->
+  <div class="row" style="margin-bottom:12px;">
+    <button class="btn" onclick="switchTab('today')">Today's Punches</button>
+    <button class="btn secondary" onclick="switchTab('allPunches')">All Punches</button>
+    <button class="btn" onclick="switchTab('users')">Users & Registration</button>
   </div>
+
+  <!-- Tab Contents -->
+
+  <!-- Today's Punches -->
+  <div id="todayTab" style="display:none;">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Username</th>
+          <th>First Punch</th>
+          <th>Last Punch</th>
+        </tr>
+      </thead>
+      <tbody id="todayTable"></tbody>
+    </table>
+  </div>
+
+  <!-- All Users Punch History -->
+  <div id="allPunchesTab" style="display:none;">
+    <table>
+      <thead>
+        <tr>
+          <th>Username</th>
+          <th>Date</th>
+          <th>First Punch</th>
+          <th>Last Punch</th>
+        </tr>
+      </thead>
+      <tbody id="allPunchesTable"></tbody>
+    </table>
+  </div>
+
+  <!-- All Users & Registration -->
+  <div id="usersTab" style="display:none;">
+    <table>
+    <thead>
+        <tr>
+            <th>Username</th>
+            <th>Registration Number</th>
+            <th>Registration Date</th>
+        </tr>
+    </thead>
+    <tbody id="usersTable"></tbody>
+</table>
+  </div>
+</div>
+
+
+
 
   <script>
     let currentUser = null;
@@ -155,26 +206,99 @@
     }
 
     function checkAdmin() {
-      if (currentUser === "admin") {
-        document.getElementById("dashboardBtn").style.display = "inline-flex";
-      } else {
-        document.getElementById("dashboardBtn").style.display = "none";
-      }
+            if (currentUser.toLowerCase() === "admin") {
+        document.getElementById("adminPanelCard").style.display = "block";
+        switchTab('today'); // default tab
+    } else {
+        document.getElementById("adminPanelCard").style.display = "none";
     }
 
-    async function showDashboard() {
-      if (currentUser !== "admin") return alert("Access denied");
-      const res = await fetch(`/admin-data?username=${currentUser}`);
-      const data = await res.json();
-      if (data.success) {
-        const tbody = document.getElementById("dashboardTable");
+    }
+
+
+
+function switchTab(tab) {
+    document.getElementById("todayTab").style.display = "none";
+    document.getElementById("allPunchesTab").style.display = "none";
+    document.getElementById("usersTab").style.display = "none";
+
+    if (tab === 'today') {
+        document.getElementById("todayTab").style.display = "block";
+        fetchTodayPunches();
+    } else if (tab === 'allPunches') {
+        document.getElementById("allPunchesTab").style.display = "block";
+        fetchAllPunches();
+    } else if (tab === 'users') {
+        document.getElementById("usersTab").style.display = "block";
+        fetchUsers();
+    }
+}
+
+// Fetch Today's Punches
+async function fetchTodayPunches() {
+    const res = await fetch("/admin-data"); // current day punches
+    const data = await res.json();
+    if (data.success) {
+        const tbody = document.getElementById("todayTable");
         tbody.innerHTML = "";
         data.data.forEach(row => {
-          tbody.innerHTML += `<tr><td>${row.username}</td><td>${row.punch_time}</td></tr>`;
+        const firstTime = row.first_punch 
+            ? row.first_punch.split(" ")[4] // "Thu, 23 Oct 2025 13:49:18 GMT" → "13:49:18"
+            : "";
+        const lastTime = row.last_punch 
+            ? row.last_punch.split(" ")[4]
+            : "";
+
+        tbody.innerHTML += `
+            <tr>
+            <td>${row.date}</td>
+            <td>${row.username}</td>
+            <td>${firstTime}</td>
+            <td>${lastTime}</td>
+            </tr>`;
         });
-        document.getElementById("dashboardArea").style.display = "block";
-      }
     }
+}
+
+// Fetch All Users Punch History
+async function fetchAllPunches() {
+    const res = await fetch("/admin-all-data"); // all users punches
+    const data = await res.json();
+    if (data.success) {
+        const tbody = document.getElementById("allPunchesTable");
+        tbody.innerHTML = "";
+        data.data.forEach(row => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${row.username}</td>
+                    <td>${row.date}</td>
+                    <td>${row.first_punch}</td>
+                    <td>${row.last_punch}</td>
+                </tr>`;
+        });
+    }
+}
+
+// Fetch All Users & Registration
+async function fetchUsers() {
+    const res = await fetch("/admin-users"); // all users with registration
+    const data = await res.json();
+    if (data.success) {
+        const tbody = document.getElementById("usersTable");
+        tbody.innerHTML = "";
+        data.data.forEach(row => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${row.username}</td>
+                    <td>${row.registration_number}</td>
+                    <td>${row.registration_date}</td>
+                </tr>`;
+        });
+    }
+}
+
+
+
 
     function logout() {
       currentUser = null;
