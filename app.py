@@ -229,7 +229,7 @@ if __name__ == "__main__":
 # );
 
 
-# INSERT INTO users (username, password) VALUES ('admin', '1234 or hash code of 1234 because we use bcrypt to make hash, ');  ## this is manual method  through registeration page it stire in DB automatically in hash code
+# INSERT INTO users (username, password) VALUES ('admin', '123 or hash code of 1234 because we use bcrypt to make hash, ');  ## this is manual method  through registeration page it stire in DB automatically in hash code
 #FROM SELECT * FROM appuser;
 
 # SELECT user, host FROM mysql.user;   to see all users in Mysql
